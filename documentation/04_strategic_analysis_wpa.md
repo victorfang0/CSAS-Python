@@ -1,34 +1,45 @@
-# Step 4: Strategic Analysis (WPA & Heatmap)
+# Step 4: The Strategic Analysis
+*Or: "Simulating Parallel Universes."*
 
-## 1. The Strategy Engine
-We have a model that predicts winning. Now we use it to calculate strategy.
+We have our Virtual Expert (the Random Forest model). Now we play a game called **"Twin Earths"**.
 
-**The Method: "The Twin Earth Simulation"**
-For every possible situation (e.g., End 6, Score -2), we asked the model two questions:
-1.  **Earth A:** "What is the win probability if we use the **Power Play** right now?" ($P_{PP}$)
-2.  **Earth B:** "What is the win probability if we use a **Normal End** right now?" ($P_{Normal}$)
+## 1. The Simulation
+We want to know: *Is the Power Play good?*
+To answer this, we take a specific situation—let's say **End 6, Score -2**. We assume we have the Hammer (since you need it to call a Power Play).
 
-## 2. Calculating Comparative Gain
-We subtracted the two probabilities:
-$$ Gain = P_{PP} - P_{Normal} $$
+We ask our model to predict the future in two different universes:
+1.  **Universe A (Power Play):** We tell the model, *"Everything is the same, but the Power Play flag is ON."*
+    *   *Model predicts:* "Win Chance: 45%".
+2.  **Universe B (Normal):** We tell the model, *"Everything is the same, but the Power Play flag is OFF."*
+    *   *Model predicts:* "Win Chance: 35%".
 
-*   **Positive Gain:** The Power Play improved our chances.
-*   **Negative Gain:** The Power Play hurt our chances.
+## 2. Calculating the Gain
+We simply subtract the two numbers.
+$$ 45\% - 35\% = +10\% $$
+In this scenario, using the Power Play increases our chance of winning by **10%**. That is huge. That is worth doing.
 
-## 3. The Results (The Heatmap)
-We visualized thousands of these simulations in the `analysis/optimal_strategy_heatmap.png`.
+## 3. The Heatmap (The Answer Key)
+We ran this "Twin Earths" simulation for *every single possible score*.
+The result is the Heatmap you saw. Here is how to read it:
 
-### Key Findings Explained:
-*   **The Golden Zone (End 6, Score -2 to -4):**
-    *   *Why?* You are running out of time (End 6/8). You need a mult-point end to catch up. The Power Play forces rocks to the wings, creating a "messy" board that allows for big scores (3 or 4 points).
-    *   *Result:* Gain of +26.89%. This is massive. It turns a "Likely Loss" into a "Toss Up".
+### The "Catch-Up" Rule
+*   Look at **Ends 5, 6, and 7**.
+*   Look at the rows where the team is **Trailing (-2, -3, -4)**.
+*   You will see **Dark Blue**.
+*   **Why?** Because the Power Play moves rocks to the sides. It stops the rocks from cluttering the center. It creates space.
+    *   If you are losing, you *need* a big score (3 or 4 points). You can only get a big score if there is space.
+    *   Therefore, the Power Play is the perfect tool for a comeback.
 
-*   **The Danger Zone (Leading by > 0):**
-    *   *Why?* When you are winning, your goal is **Variance Reduction**. You want boring ends. You want to peel rocks and keep the middle open.
-    *   *Result:* Using the Power Play (which creates messiness) actually **reduces** your win probability. You are taking unnecessary risks.
+### The "Don't Throw It Away" Rule
+*   Look at the rows where the team is **Leading (+1, +2)**.
+*   You will see **Red**.
+*   **Why?** When you are winning, you want a boring, cluttered game. You want to block the house. You don't want space.
+    *   Using the Power Play gives your opponent space too! It gives *them* a chance to score big against you.
+    *   **Lesson:** Never use a Risk-Creation tool when you are winning.
 
-## 4. Opportunity Cost
-This is the final piece of the puzzle.
-*   "Why not use it in End 1 if the Gain is +1%?"
-*   **Answer:** Because you represent a *Limited Resource*. You only get ONE Power Play per game.
-*   We concluded that you should **save** the Power Play until the Gain exceeds a "Threshold" (e.g., > 10%). End 1 gains are too small to justify burning the card. The "Option Value" of holding it for a future End 6 emergency is far higher.
+## 4. Opportunity Consultant (Cost)
+A student asked: *"Sir, the model says End 1 gives a +0.5% gain. Should I use it?"*
+**No.**
+*   You only get **ONE** Power Play per game.
+*   If you use it in End 1 for a 0.5% gain, you cannot use it in End 6 for a 26% gain.
+*   This is called **Opportunity Cost**. Don't spend a dollar to buy a penny. Save it for the moment it changes the game.

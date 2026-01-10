@@ -1,32 +1,39 @@
-# Step 5: Visualization & Coordinate System
+# Step 5: Visualization & Mapping
+*Or: "Drawing a map when you only have GPS coordinates."*
 
-## 1. The "Dots" Puzzle
-The user requested to see "the dots" (stone placements). We opened `Stones.csv` and found a mess:
-*   Columns relative to... nothing?
-*   Values ranged from 0 to 4095.
-*   No documentation on what "x=2000" meant.
+Finally, we looked at the stone locations. The user wanted to see "The Dots."
+We opened the file `Stones.csv` and found a list of numbers like `x=765`, `y=2000`.
+To a human, these numbers are meaningless. We had to draw a map.
 
-## 2. Reverse Engineering the Sheet
-We used **Statistical Forensics** to map the board.
+## 1. Statistical Forensics
+We didn't know where the "House" (the target) was. The data didn't tell us. So we used detective work.
+*   We assumed that in professional curling, players are good (usually).
+*   Therefore, most stones should land near the target.
+*   We plotted **150,000 stones** on a graph (a Heatmap).
 
-1.  **The Heatmap:** We plotted *every single stone* from thousands of games.
-2.  **The "Donut" Hypothesis:** We expected stones to cluster in the House (the target).
-    *   *Initial guess:* Center is (2048, 2048).
-    *   *Reality:* The histogram showed the center was actually near **(765, 740)**.
-3.  **The Scale:** We measured the "spread" of the stones.
-    *   Most stones fall within a radius of ~600 units from the center.
-    *   Since the standard Curling House radius is 6 feet, we derived the scale: **~100 units = 1 Foot**.
+**The Result:**
+We saw a massive, glowing red dot of stones clustered at one specific point: **(765, 740)**.
+*   That *must* be the Button (the center).
 
-## 3. Interpreting the Visualization
-We generated `analysis/coordinate_system_corrected.png`.
+## 2. Finding the Scale
+We knew the digital center. But how big is a "foot"?
+*   We measured the spread of the stones.
+*   We know a real Curling House is **12 feet wide** (6 foot radius).
+*   In our data, the stone cluster faded away about **600 pixels** from the center.
+*   **Math:** $$ 600 \text{ pixels} \div 6 \text{ feet} = 100 \text{ pixels per foot} $$.
 
-*   **The Rings:** We drew circles at 6ft, 4ft, 2ft, and 1ft (Button) using our derived scale.
-*   **Verification:** The dots (actual stone data) lined up *perfectly* inside our drawn rings. This confirmed our reverse-engineered map was correct.
+## 3. Drawing the Diagram
+Once we had the Center (765, 740) and the Scale (100px = 1ft), we could draw the rings ourselves.
+*   We told python: *"Draw a blue circle at radius 600"*. (12ft Ring)
+*   *"Draw a white circle at radius 400"*. (8ft Ring)
+*   *"Draw a red circle at radius 200"*. (4ft Ring)
 
-## 4. What the Data Means
-Now that we have the map, every row in `Stones.csv` tells a story:
-*   `x=765, y=740`: A "Button" shot (bullseye).
-*   `x=500, y=740`: A "Guard" sitting to the left of the button.
-*   `x=765, y=200`: A "High Guard" protecting the house.
+When we overlaid the actual data on top of our drawing, it lined up perfectly. This confirms our math was right.
 
-This visualization allows us to answer the next level of strategy questions: *"Where should we place the rocks during a Power Play?"* (e.g., Center Guards vs Corner Guards).
+## 4. Why this matters
+Now that we have this map, we can answer the tactical questions.
+*   *"When practicing Power Plays, do we place the guard stone at x=500 or x=600?"*
+*   Before, those were just numbers. Now, we know exactly where that is on the ice.
+*   We can analyze if **Corner Guards** (protecting the side) are better than **Center Guards** (protecting the button) during a Power Play.
+
+And that, class, is how you use Data Science to solve Curling.

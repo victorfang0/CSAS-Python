@@ -1,29 +1,35 @@
-# Step 2: Data Engineering & Pipeline
+# Step 2: Data Engineering
+*Or: "Why real-world data is always broken, and how we fixed it."*
 
-## 1. The Raw Data
-We started with two files:
-*   `Ends.csv`: Contains the results of every end (scores).
-*   `Games.csv`: Contains metadata about the teams and match IDs.
+Alright, we have our strategy. Now we need data. We downloaded two files: `Ends.csv` (the scoreboard) and `Games.csv` (the teams).
+I opened them up, and immediately, I found a disaster.
 
-## 2. The Critical Bug: ID Collisions
-During the first pass, we found a major issue.
-*   **Observation:** There were thousands of rows in `Ends.csv`, but when we grouped by `GameID`, we only saw ~5 unique games.
-*   **Root Cause:** The `GameID` (e.g., "1") was reused across different Competitions. "Game 1" existed in the Olympics, and "Game 1" existed in the World Championship.
-*   **The Fix:** We implemented a **Composite Key**. We grouped data by `['CompetitionID', 'GameID']`. This unique combination correctly separated the matches, recovering thousands of data points.
+## 1. The "John Smith" Problem (ID Collisions)
+Imagine if our school database listed students only by "First Name".
+If I searched for "John", I’d get John from 9th grade, John from 10th grade, and John the janitor. I wouldn't know who is who.
 
-## 3. Feature Engineering logic
-We wrote a script (`src/feature_engineering.py`) to transform the raw logs into a "Teaching Dataset" for our AI model.
+**This happened in our data.**
+*   The file listed `GameID: 1`. 
+*   But "Game 1" happened in the Olympics. And "Game 1" happened in the World Cup. And "Game 1" happened in the National Qualifiers.
+*   When we merged them, the computer thought they were all the same game! It was mixing up Olympic scores with High School scores.
 
-### Key Features Created:
-*   `ScoreDiff`: We calculated the running score *before* the end started.
-    *   *Logic:* `CumlativeScore_TeamA - CumulativeScore_TeamB`.
-*   `Hammer`: The rule is "Loser of the previous end gets the Hammer".
-    *   *Logic:* We implemented a state tracker that flips the hammer token after every end.
-*   `Won_Game`: The target variable.
-    *   *Logic:* We summed the total points for the game and checked if `FinalPoints_Team > FinalPoints_Opp`.
+### The Fix: Composite Keys
+We had to create a "Full Name" for each game.
+Instead of looking for `GameID`, we told the computer to group by **Two Columns**: `CompetitionID` + `GameID`.
+*   *Before:* "Game 1" (Ambiguous).
+*   *After:* "Competition 5, Game 1" (Unique).
+**Lesson:** Always check your identifiers. Unique IDs are rarely unique in the real world.
 
-## 4. The Output
-The pipeline produced `analysis/modeling_data.csv`, a clean table where every row represents *one decision point* in a game:
-*   Input: "End 6, Down by 2, Have Hammer".
-*   Action: "Used Power Play".
-*   Result: "Won Game (True/False)".
+## 2. Translating "Curling" to "Spreadsheet"
+Understanding the game isn't enough; we have to explain it to a computer using numbers. This is called **Feature Engineering**.
+
+*   **The Hammer (Last Rock):** 
+    *   *Concept:* The team that throws the last rock has a huge advantage. They usually score.
+    *   *The Rule:* If you score in an end, you give the Hammer to the other team. If you score 0, you keep it.
+    *   *The Code:* We wrote a loop that tracked who scored. If Team A scored > 0, we flipped the value `Hammer_Team` to Team B.
+*   **Score Differential:**
+    *   *Concept:* Are we winning or losing?
+    *   *The Code:* We simply calculated `My_Total_Score - Opponent_Total_Score`.
+    *   *Why:* Being down by 2 is very different from being down by 20. The model needs to know the pressure.
+
+We saved this clean, translated data into `modeling_data.csv`. Now, the computer is ready to learn.
