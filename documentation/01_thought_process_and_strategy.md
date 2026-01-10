@@ -18,21 +18,26 @@ The coach (the user) came to me with a question:
 > *"Sir, when is the exact right time to play this Wildcard? Do I use it early to get ahead? Or save it for a rainy day?"*
 
 ## 3. The "High School" Approach vs. The "Graduate" Approach
-Most students would answer this by looking at **Average Points**.
-They would say: *"Well, teams score 2.5 points with the Power Play and 1.5 points without it. So, use it immediately!"*
+Most students would answer this by looking at **Expected Points ($E[P]$)**.
+They would define the value of the Power Play ($V_{pp}$) as:
+$$ V_{pp} = E[Points | PowerPlay] - E[Points | Normal] $$
 
 **Here is why that is wrong.**
-Imagine you are winning 8-0 in the last end. 
-*   Does scoring 2 more points (10-0) help you? **No.** You were already going to win.
+Imagine you are winning 8-0 in the last end ($S = +8, E = 8$).
+*   Does scoring 2 more points (10-0) help you? **No.** You were already going to win ($P(Win) \approx 1.0$).
 *   Does the Power Play risk letting the opponent score? **Yes.**
-*   In this case, "more points" is actually **bad strategy** because it introduces risk.
+*   In this case, maximizing $E[Points]$ is actually **bad strategy** because it introduces variance ($\sigma^2$) that you don't need.
 
-### The Graduate Concept: "Comparative Gain"
-We don't care about points. We care about **Winning**.
-We introduced a metric called **WPA (Win Probability Added)**.
-We ask:
-1.  What is my % chance to win if I play safe? (e.g., 80%).
-2.  What is my % chance to win if I use the Power Play? (e.g., 75%).
+### The Graduate Concept: "Win Probability Added" (WPA)
+We don't care about points ($P$). We care about Winning ($W$).
+We introduced a metric called **WPA**.
+We define the Game State vector $\vec{x}$ as:
+$$ \vec{x} = \{ \text{ScoreDiff}, \text{EndNumber}, \text{Hammer} \} $$
 
-If the number goes *down*, the Power Play was a bad idea, even if you scored points!
-**Our Strategy:** We will build an AI model to calculate this "Win %" for every single moment in a game.
+The Win Probability function $f(\vec{x})$ gives us the probability of winning given state $\vec{x}$.
+$$ P(Win) = f(\vec{x}) $$
+
+Therefore, the value of the Power Play is the **Comparative Gain**:
+$$ WPA(\vec{x}) = P(Win | \vec{x}, PowerPlay=1) - P(Win | \vec{x}, PowerPlay=0) $$
+
+**Our Strategy:** We will build an AI model to estimate the function $f(\vec{x})$ for every possible game state.
