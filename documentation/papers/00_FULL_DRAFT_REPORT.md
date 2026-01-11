@@ -37,10 +37,18 @@ To ensure clarity, we define the following variables used in our model:
 
 ### 2.3 Data Engineering
 
-### 2.2 The Model
-We trained a **Random Forest Classifier** ($N_{trees}=100$, Max Depth=5) to estimate the function $f(\vec{x}) = P(Win | \vec{x})$.
-*   **Performance:** The model achieved an AUC of **0.89** on the test set.
-*   **Logic:** The Random Forest approach was selected for its robustness to non-linear interactions (e.g., the value of the Hammer changes as the End number increases).
+### 2.2 Model Selection & Justification
+We selected a **Random Forest Classifier** ($N_{trees}=100$, Max Depth=5) to approximate the Win Probability function:
+$$ f(\vec{x}) = P(Win_{Match} | \vec{x}_{End}) $$
+where $\vec{x}$ is the state vector $\{ScoreDiff, EndID, Hammer, PowerPlay\}$.
+
+**Why Random Forest?**
+1.  **Non-Linear Interactions:** The strategic value of game state variables is highly conditional. For example, possession of the Hammer (last rock) is critical in End 8 (worth ~100% win probability if tied) but less decisive in End 1. Similarly, a +1 lead is valuable in low-scoring defensive games but precarious in high-scoring shootouts. Methods like **Logistic Regression** assume linear relationships and fail to capture these "cliff-edge" interaction effects without manual feature engineering.
+2.  **Robustness to Overfitting:** By averaging the predictions of 100 independent decision trees, the Random Forest minimizes the variance inherent in small datasets ($N \approx 5000$ ends).
+3.  **Rejection of Alternatives:**
+    *   **Logistic Regression:** Rejected due to its inability to model complex decision boundaries (e.g., the specific non-linear value of the Power Play at End 6 vs End 7) without extensive transformation.
+    *   **Deep Neural Networks:** Rejected as "overkill". Given the tabular nature and limited size of the dataset, deep learning models are prone to overfitting and lack the interpretability required for a strategy paper.
+    *   **XGBoost:** Considered, but Random Forest was preferred for its simpler hyperparameter tuning and lower risk of overfitting on this specific sample size.
 
 ## 3. Strategic Analysis (The "When")
 
