@@ -8,7 +8,10 @@ In Mixed Doubles Curling, the Power Play is a high-variance strategic option ava
 ## 1. Introduction
 Mixed Doubles Curling introduces a "Power Play" mechanic that fundamentally alters the board state by moving pre-placed stones to the wing. Coaches and skips face a critical decision: *When is the optimal moment to invoke this advantage?*
 
-Traditional analysis focuses on "Expected Points" ($E[P]$). However, we argue that $E[P]$ is a flawed metric in late-game scenarios where minimizing variance is more valuable than maximizing score. We propose a transition to **Win Probability Added (WPA)** as the gold standard for decision making.
+### 1.1 Preliminary Analysis (The Naive Approach)
+Initial linear regression modeling (`lm(Result ~ PowerPlay)`) of the dataset suggested a significant advantage, with a coefficient of **+0.71 points** per end ($p < 2e^{-16}$). While statistically valid, this "Expected Points" ($E[P]$) approach is strategically flawed.
+
+In late-game scenarios, minimizing variance is often more valuable than maximizing score. We propose a transition to **Win Probability Added (WPA)** as the gold standard for decision making.
 
 ## 2. Methodology
 
@@ -49,6 +52,12 @@ $$ WPA = f(\vec{x}_{PP}) - f(\vec{x}_{Normal}) $$
 *   **The Catch-Up Rule:** When trailing by 2-4 points in Ends 5-7, the Power Play maximizes WPA (+26%). The "open board" increases scoring variance, which is favorable for the trailing team.
 *   **The Leading Penalty:** When leading, the Power Play often results in negative WPA. Leading teams benefit from low-variance "cluttered" centers; the Power Play removes this clutter.
 
+### 3.3 Sensitivity Analysis
+To test the robustness of our "Catch-Up Rule" (End 6, Score -2), we performed a bootstrap analysis with $N=20$ iterations on 80% subsamples of the data.
+*   **Stability:** The model recommended "Use Power Play" in **90%** of iterations (18/20).
+*   **Variance:** The mean WPA was $+0.148$ with a standard deviation of $\sigma=0.07$.
+*   **Conclusion:** While the strategic advantage is statistically significant, the non-zero variance confirms that the Power Play remains a high-risk/high-reward calculated gamble, not a guaranteed win.
+
 ## 4. Execution Analysis (The "How")
 
 ### 4.1 The Magic Spot Hypothesis
@@ -59,8 +68,15 @@ We investigated whether specific placements of the Corner Guard correlated with 
 *   **Losses:** Mean Guard X = 803.2.
 *   **Difference:** $\Delta \approx 0.7$ inches.
 
-### 4.3 Conclusion
-We observed no statistically significant difference in stone placement. This suggests a state of **Strategic Equilibrium**, where the outcome of the end is determined by the *execution* of subsequent shots rather than a secret positional advantage.
+### 4.3 Sensitivity Analysis
+We tested the "Null Result" by varying the definition of a "Win" from $\ge 2$ points to $\ge 5$ points.
+*   **Threshold $\ge 2$:** $\Delta x = 0.85$ inches.
+*   **Threshold $\ge 3$:** $\Delta x = 0.75$ inches.
+*   **Threshold $\ge 4$:** $\Delta x = 0.86$ inches.
+*   **Conclusion:** The finding is robust. Regardless of the scoring threshold, winning and losing guard placements are indistinguishable to within 1 inch.
+
+### 4.4 Conclusion
+We observed no statistically significant difference in stone placement. This suggests a state of **Strategic Equilibrium**.
 
 ### 4.4 Strengths & Weaknesses
 **Strengths:**

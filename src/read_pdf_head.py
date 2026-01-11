@@ -23,5 +23,5 @@ def read_pdf_head(path, pages=5):
         print(f"Error: {e}")
 
 if __name__ == "__main__":
-    pdf_path = "/Users/victor/Desktop/CSAS/M3 Challenge 2025/2025 M3 Challenge Paper.pdf"
+    pdf_path = "/Users/victor/Desktop/CSAS/R Modeling/Curling.pdf"
     read_pdf_head(pdf_path)
