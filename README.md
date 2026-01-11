@@ -1,52 +1,89 @@
 # CSAS 2026 Data Challenge: Mixed Doubles Curling
 
 ## Project Overview
-This repository contains the code, data, and analysis for the **CSAS 2026 Data Challenge**.
 **Topic:** Mixed Doubles Curling Power Play Optimization.
 **Goal:** To determine the optimal strategic usage of the "Power Play" mechanic using Win Probability Added (WPA) modeling.
+**Method:** This project utilizes a Random Forest classifier (AUC 0.89) to estimate win probability from game state features and simulates outcomes to derive a Comparative Gain metric.
 
-## Directory Structure
+---
 
-### 1. Documentation (`/documentation`)
-*   **Papers:** Contains the detailed narrative explaining the methodology and results.
-    *   `papers/00_FULL_DRAFT_REPORT.md`: The compiled manuscript.
-    *   `papers/06_shot_selection_and_execution.md`: Analysis of rock placement.
-    *   `papers/04_strategic_analysis_wpa.md`: The Strategy Heatmap analysis.
-*   **Artifacts:** generated figures and processed data, each with a `.md` descriptor explaining its content.
-    *   `optimal_strategy_heatmap.png`: The primary result (When to use Power Play).
-    *   `shot_selection_analysis.png`: The analysis of guard execution.
-    *   `modeling_data.csv`: The feature-engineered dataset.
+## ⚠️ Data Privacy & Setup
+**Per CSAS rules, the raw challenge data is not included in this repository as the organizers already possess it.**
 
-### 2. Source Code (`/src`)
-*   **Data Pipeline:**
-    *   `feature_engineering.py`: Merges raw `Ends.csv` and `Games.csv`, resolves ID conflicts, and calculates `ScoreDiff`.
-*   **Modeling:**
-    *   `train_model.py`: Trains the Random Forest Classifier (AUC 0.89) to predict `Won_Game`.
-*   **Analysis:**
-    *   `optimal_strategy.py`: Simulates game states to generate the Strategy Heatmap.
-    *   `analyze_rock_location.py`: analyzes stone coordinates to test the "Magic Spot" hypothesis.
-    *   `visualize_sheet.py`: Reverse-engineers the curling sheet coordinate system.
+### Comparison
+To run this code, you must place the official challenge CSV files into a local directory named `data/`.
 
-## How to Reproduce Results
+**Required File Structure:**
+```
+/ (Root)
+├── data/
+│   ├── Ends.csv
+│   ├── Games.csv
+│   └── Stones.csv
+├── src/
+├── documentation/
+├── requirements.txt
+└── README.md
+```
 
-### Prerequisites
-*   Python 3.8+
-*   Required Libraries: `pandas`, `numpy`, `scikit-learn`, `matplotlib`, `seaborn`
+**External Data:**
+No external public datasets were used in this analysis. All findings are derived strictly from the provided competition data.
 
-### Steps
-1.  **Install Dependencies:**
+---
+
+## 🛠 Reproducibility Instructions
+
+### 1. Requirements
+Install the necessary Python headers:
+```bash
+pip install -r requirements.txt
+```
+*Validated on Python 3.9+ with pandas 2.0+*
+
+### 2. Execution Order
+Run the following scripts in the specified order to reproduce the analysis pipeline:
+
+1.  **Data Cleaning & Feature Engineering:**
     ```bash
-    pip install pandas numpy scikit-learn matplotlib seaborn
+    python3 src/feature_engineering.py
     ```
-2.  **Run the Pipeline:**
-    *   **Step 1 (Data):** `python3 src/feature_engineering.py`
-        *   *Output:* `analysis/modeling_data.csv`
-    *   **Step 2 (Model):** `python3 src/train_model.py`
-        *   *Output:* `models/wp_rf.pkl` and `analysis/modeling_data_with_probs.csv`
-    *   **Step 3 (Strategy):** `python3 src/optimal_strategy.py`
-        *   *Output:* `analysis/optimal_strategy_heatmap.png`
-    *   **Step 4 (Tactics):** `python3 src/analyze_rock_location.py`
-        *   *Output:* `analysis/shot_selection_analysis.png`
+    *Output:* Generates `modeling_data.csv` (Merged game states with calculated Score Differentials).
 
-## Authors
-*   *Anonymized for CSAS Submission*
+2.  **Model Training:**
+    ```bash
+    python3 src/train_model.py
+    ```
+    *Output:* Trains the Random Forest model, saves it to `models/`, and produces `modeling_data_with_probs.csv`.
+
+3.  **Strategy Analysis (The "When"):**
+    ```bash
+    python3 src/optimal_strategy.py
+    ```
+    *Output:* Generates `analysis/optimal_strategy_heatmap.png` (The WPA Decision Matrix).
+
+4.  **Tactic Analysis (The "How"):**
+    ```bash
+    python3 src/analyze_rock_location_stats.py
+    ```
+    *Output:* Prints statistical comparison of winning vs. losing stone coordinates to console.
+
+---
+
+## 📂 File Dictionary
+
+### Core Pipeline
+*   `src/feature_engineering.py`: Merges raw `Ends.csv` and `Games.csv` using composite keys and calculates the running Score Differential.
+*   `src/train_model.py`: Trains a Random Forest Classifier to predict `Won_Game` using features `ScoreDiff`, `EndID`, `Hammer`, and `PowerPlay`.
+*   `src/optimal_strategy.py`: Simulates outcomes for all possible game states to calculate Win Probability Added (WPA) and generates the strategy heatmap.
+*   `src/analyze_rock_location.py`: Filters Power Play ends to isolate the first thrown stone and visualizes its location for winning vs. losing outcomes.
+*   `src/analyze_rock_location_stats.py`: Calculates the precise centroids (X,Y) of guard stones to test for statistical significance in placement.
+
+### Visualization & Forensics
+*   `src/visualize_sheet.py`: Plots raw stone coordinates to reverse-engineer the physical dimensions of the curling sheet.
+*   `src/check_coords.py`: Performs initial sanity checks on coordinate ranges to filter out sentinel error values (e.g., 4095).
+*   `src/find_center.py`: Uses density clustering to mathematically identify the exact center of the House (Button).
+*   `src/calibrate_coords.py`: Calculates the pixel-to-foot scale factor based on standard ring radii.
+
+### Documentation Resources
+*   `documentation/papers/`: Contains the full narrative report and analysis chapters.
+*   `documentation/artifacts/`: Contains generated figures (Heatmaps, Maps) with technical descriptor files.
