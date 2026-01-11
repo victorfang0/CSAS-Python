@@ -34,7 +34,7 @@ No external public datasets were used in this analysis. All findings are derived
 ## 🛠 Reproducibility Instructions
 
 ### 1. Requirements
-Install the necessary Python headers:
+Install the necessary Python libraries:
 ```bash
 pip install -r requirements.txt
 ```
@@ -45,25 +45,25 @@ Run the following scripts in the specified order to reproduce the analysis pipel
 
 1.  **Data Cleaning & Feature Engineering:**
     ```bash
-    python3 src/feature_engineering.py
+    python3 src/pipeline/feature_engineering.py
     ```
     *Output:* Generates `modeling_data.csv` (Merged game states with calculated Score Differentials).
 
 2.  **Model Training:**
     ```bash
-    python3 src/train_model.py
+    python3 src/modeling/train_model.py
     ```
     *Output:* Trains the Random Forest model, saves it to `models/`, and produces `modeling_data_with_probs.csv`.
 
 3.  **Strategy Analysis (The "When"):**
     ```bash
-    python3 src/optimal_strategy.py
+    python3 src/analysis/core/optimal_strategy.py
     ```
     *Output:* Generates `analysis/optimal_strategy_heatmap.png` (The WPA Decision Matrix).
 
 4.  **Tactic Analysis (The "How"):**
     ```bash
-    python3 src/analyze_rock_location_stats.py
+    python3 src/analysis/core/analyze_rock_location_stats.py
     ```
     *Output:* Prints statistical comparison of winning vs. losing stone coordinates to console.
 
@@ -71,18 +71,31 @@ Run the following scripts in the specified order to reproduce the analysis pipel
 
 ## 📂 File Dictionary
 
-### Core Pipeline
-*   `src/feature_engineering.py`: Merges raw `Ends.csv` and `Games.csv` using composite keys and calculates the running Score Differential.
-*   `src/train_model.py`: Trains a Random Forest Classifier to predict `Won_Game` using features `ScoreDiff`, `EndID`, `Hammer`, and `PowerPlay`.
-*   `src/optimal_strategy.py`: Simulates outcomes for all possible game states to calculate Win Probability Added (WPA) and generates the strategy heatmap.
-*   `src/analyze_rock_location.py`: Filters Power Play ends to isolate the first thrown stone and visualizes its location for winning vs. losing outcomes.
-*   `src/analyze_rock_location_stats.py`: Calculates the precise centroids (X,Y) of guard stones to test for statistical significance in placement.
+### 1. Pipeline (`src/pipeline/`)
+*   `feature_engineering.py`: Merges raw `Ends.csv` and `Games.csv` using composite keys and calculates the running Score Differential.
+*   `eda_preview.py` & `eda_deep_dive.py`: Exploratory Data Analysis scripts used for initial dataset investigation.
 
-### Visualization & Forensics
-*   `src/visualize_sheet.py`: Plots raw stone coordinates to reverse-engineer the physical dimensions of the curling sheet.
-*   `src/check_coords.py`: Performs initial sanity checks on coordinate ranges to filter out sentinel error values (e.g., 4095).
-*   `src/find_center.py`: Uses density clustering to mathematically identify the exact center of the House (Button).
-*   `src/calibrate_coords.py`: Calculates the pixel-to-foot scale factor based on standard ring radii.
+### 2. Modeling (`src/modeling/`)
+*   `train_model.py`: Trains a Random Forest Classifier to predict `Won_Game` using features `ScoreDiff`, `EndID`, `Hammer`, and `PowerPlay`.
+
+### 3. Analysis (`src/analysis/`)
+#### Core (`src/analysis/core/`)
+*   `optimal_strategy.py`: Simulates outcomes for all possible game states to calculate WPA and generates the strategy heatmap.
+*   `analyze_rock_location.py`: Visualizes the location of the first thrown stone for winning vs. losing outcomes.
+*   `analyze_rock_location_stats.py`: Calculates statistical centroids (X,Y) of guard stones.
+
+#### Sensitivity (`src/analysis/sensitivity/`)
+*   `sensitivity_execution.py`: Tests if the "Null Result" holds across different scoring thresholds (2, 3, 4, 5 pts).
+*   `sensitivity_strategy.py`: Bootstraps the WPA model 20x to verify the stability of the "Catch-Up Rule".
+
+#### Legacy (`src/analysis/legacy/`)
+*   `basic_analysis.py`: Initial exploration (Avg Points) discarded in favor of WPA.
+
+### 4. Utilities (`src/utils/`)
+*   `visualize_sheet.py`: Plots raw stone coordinates to reverse-engineer the physical dimensions of the curling sheet.
+*   `check_coords.py`: Performs initial sanity checks on coordinate ranges.
+*   `find_center.py`: Uses density clustering to identify the exact center of the House.
+*   `calibrate_coords.py`: Calculates the pixel-to-foot scale factor.
 
 ### Documentation Resources
 *   `documentation/papers/`: Contains the full narrative report and analysis chapters.
