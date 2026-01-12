@@ -122,11 +122,15 @@ $$
 Future modeling on the opportunity cost of using the power play could utilize **Monte Carlo simulations** or **Markov Chains** to simulate future states and determine when invoking the power play is more beneficial.
 
 ## 6. Conclusion
-This paper presents a complete strategic framework for the Mixed Doubles Power Play.
-1.  **The Strategy (When):** We proved mathematically that the Power Play is a **Catch-Up Mechanism**. It should be used in Ends 5-7 when trailing by 2-4 points to maximize variance. Leading teams should avoid it.
-2.  **The Tactics (How):** We debunked the "Magic Spot" hypothesis. Our analysis of 598 starts showed no statistical difference ($\Delta < 1$ inch) in guard placement between winners and losers.
+I have developed a general **Win Probability framework** for Mixed Doubles Curling. This framework is flexible to varying game states, with regards to Score Differential, End Number, and Hammer possession.
 
-We conclude that at the elite level, the **Decision** (Strategy) creates the advantage, but **Execution** (Skill) secures the win.
+In addition, strategic choices such as Power Play usage were modeled to quantify their impact on match outcomes. The **high-variance nature** of this problem means that a **Win Probability Added (WPA)** approach was essential to evaluate strategic value beyond simple expected points. Modeling of the Random Forest classifier and coordinate systems is described in detail in the **appendix**. The relevant code is shared on **Github**.
+
+I have created a **Strategy Heatmap** to allow coaches to explore optimal Power Play usage through these models.
+
+A **counterfactual simulation (Twin Earths)** was implemented to derive the optimal decision for any chosen game state. The variation in optimal strategy has been shown for all scores and ends, and a more detailed exploration of the effect of the input variables on decision making is shown in the appendix.
+
+Public analysis of Curling strategy has so far been limited to **Average Points** analysis. This work is a first step to model **championship effectiveness** in a more granular way, with many potential applications for both National Teams and analysts.
 
 ## 7. References
 1.  **World Curling Federation.** (2025). *Rules of Curling & Rules of Competition*.
