@@ -39,7 +39,11 @@ To ensure clarity, we define the following variables used in our model:
 
 ### 2.2 Model Selection & Justification
 We selected a **Random Forest Classifier** ($N_{trees}=100$, Max Depth=5) to approximate the Win Probability function:
-$$ f(\vec{x}) = P(Win_{Match} | \vec{x}_{End}) $$
+
+$$
+f(\vec{x}) = P(Win_{Match} | \vec{x}_{End})
+$$
+
 where $\vec{x}$ is the state vector $\{ScoreDiff, EndID, Hammer, PowerPlay\}$.
 
 **Why Random Forest?**
