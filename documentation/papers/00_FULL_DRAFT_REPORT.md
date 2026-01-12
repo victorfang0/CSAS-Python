@@ -40,14 +40,14 @@ The raw dataset consisted of two disparate CSV files: `Games.csv` (metadata) and
 1.  **Composite Keys:** We discovered ID collisions where `GameID: 1` referred to multiple matches across different events. We resolved this by generating a unique primary key: `CompetitionID_GameID_EndID`.
 2.  **Feature Engineering:**
     *   **Hammer Logic:** We algorithmically tracked possession of the "Last Rock" advantage, flipping the binary indicator `Hammer` only when a team scored $>0$ points.
-    *   **Score Differential:** We computed `ScoreDiff = OwnScore - OpponentScore` to quantify game pressure.
+    *   **Score Differential:** We computed $\text{ScoreDiff} = \text{OwnScore} - \text{OpponentScore}$ to quantify game pressure.
     *   **Handling Sentinel Values:** Coordinate error codes (e.g., `x=4095`) were filtered out before centroid analysis.
 
 ### 2.3 Model Selection & Justification
-We selected a **Random Forest Classifier** ($N_{trees}=100$, Max Depth=5) to approximate the Win Probability function:
+We selected a **Random Forest Classifier** ($N_{\text{trees}}=100$, Max Depth=5) to approximate the Win Probability function:
 
 $$
-f(\vec{x}) = P(Win_{Match} | \vec{x}_{End})
+f(\vec{x}) = P(\text{Win}_{\text{Match}} | \vec{x}_{\text{End}})
 $$
 
 where $\vec{x}$ is the state vector $\{ScoreDiff, EndID, Hammer, PowerPlay\}$.
