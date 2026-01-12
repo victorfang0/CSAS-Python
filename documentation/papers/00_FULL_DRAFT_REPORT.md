@@ -64,6 +64,8 @@ where $\vec{x}$ is the state vector $\{ScoreDiff, EndID, Hammer, PowerPlay\}$.
 
 ### 3.1 The Twin Earths Simulation
 To measure the value of the Power Play, we simulated two scenarios for every possible game state:
+
+
 $$
 \text{WPA} = f(\vec{x}_{\text{PP}}) - f(\vec{x}_{\text{Normal}})
 $$
