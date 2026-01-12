@@ -107,19 +107,19 @@ We observed no statistically significant difference in stone placement. This sug
 *   **Statistical Power:** Our "Null Result" on shot selection is derived from $N=598$ Power Play ends, providing high confidence that the finding is not a result of sample noise.
 
 ### 5.2 Limitations & Weaknesses
-*   **Missing "Rock Interaction" Features:** Our Random Forest model predicts based on the scoreboard state ($\vec{x}$), but it does not "see" the board. It cannot distinguish between a "Clean House" and a "Messy House," which subtly affects win probability.
-*   **Ice Conditions:** Our model assumes a "perfect friction" environment. In reality, ice degrades over 8 ends.
-*   **Psychological Factors:** Our "Rational Actor" assumption ignores pressure. A Bayesian prior based on historical team performance under pressure could refine the model.
+*   **Model Complexity vs. Data:** With a larger dataset, we could define more complex models (e.g., **XGBoost**) which might offer marginally higher accuracy. However, given the current sample size, we prioritized preventing overfitting.
+*   **Skill Homogeneity:** We currently model an "Average Team." Future work should model individual team/player data to capture specific **quirks and strengths** (e.g., a team that excels at defensive peeling).
+*   **Qualitative Validation:** Our predictions are purely quantitative. A rigorous next step would be to analyze video footage of real matches to validate that our model's "high WPA" states align with expert eye tests.
+*   **Rock Interaction:** Our model predicts based on the scoreboard state ($\vec{x}$), but does not "see" the board geometry (Crowdedness).
 
-### 5.3 Future Improvements (Monte Carlo)
-Our current WPA calculation assumes we maximize the single-step gain:
+### 5.3 Comparative Gain Notes
+Modeling for comparative gain considers both points above expected average and winning probability (initial and final). However, it is important to note that in-game, teams must consider the **Opportunity Cost** of using the Power Play, as a potentially more advantageous situation may arise later in the match.
 
 $$
 \text{WPA} = P(W | \text{Use PP}) - P(W | \text{Save PP})
 $$
 
-However, the "Save PP" branch is an estimate.
-*   **Proposal:** A full **Monte Carlo Simulation** of the remaining ends (playing out thousands of full games from End $T$ to End 8) would provide a more precise calculation of the "Opportunity Cost" of saving the Power Play.
+Future modeling on the opportunity cost of using the power play could utilize **Monte Carlo simulations** or **Markov Chains** to simulate future states and determine when invoking the power play is more beneficial.
 
 ## 6. Conclusion
 This paper presents a complete strategic framework for the Mixed Doubles Power Play.
