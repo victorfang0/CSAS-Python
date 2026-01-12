@@ -19,8 +19,13 @@ We used our Coordinate System from Step 5.
 We extracted the location vector $\vec{v}_i = (x_i, y_i)$ for the first thrown stone in $N=598$ Power Play ends.
 We calculated the **Centroid** (Average Position) for both groups:
 
-$$ \vec{\mu}_{win} = \frac{1}{N_{win}} \sum \vec{v}_{win} $$
-$$ \vec{\mu}_{loss} = \frac{1}{N_{loss}} \sum \vec{v}_{loss} $$
+$$
+\vec{\mu}_{win} = \frac{1}{N_{win}} \sum \vec{v}_{win}
+$$
+
+$$
+\vec{\mu}_{loss} = \frac{1}{N_{loss}} \sum \vec{v}_{loss}
+$$
 
 ## 3. The Result (The Null Hypothesis)
 We expected to see two different clusters.

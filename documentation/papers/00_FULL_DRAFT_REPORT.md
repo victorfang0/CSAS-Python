@@ -35,9 +35,15 @@ To ensure clarity, we define the following variables used in our model:
 | $\lambda$ | Scale Factor | The ratio of pixels in the dataset to real-world feet. | px/ft |
 | $\mu$ | Centroid | The geometric center of a cluster of stones. | $(x,y)$ coord |
 
-### 2.3 Data Engineering
+### 2.2 Data Engineering
+The raw dataset consisted of two disparate CSV files: `Games.csv` (metadata) and `Ends.csv` (play-by-play). We implemented a rigorous cleaning pipeline to prepare this data for modeling:
+1.  **Composite Keys:** We discovered ID collisions where `GameID: 1` referred to multiple matches across different events. We resolved this by generating a unique primary key: `CompetitionID_GameID_EndID`.
+2.  **Feature Engineering:**
+    *   **Hammer Logic:** We algorithmically tracked possession of the "Last Rock" advantage, flipping the binary indicator `Hammer` only when a team scored $>0$ points.
+    *   **Score Differential:** We computed `ScoreDiff = OwnScore - OpponentScore` to quantify game pressure.
+    *   **Handling Sentinel Values:** Coordinate error codes (e.g., `x=4095`) were filtered out before centroid analysis.
 
-### 2.2 Model Selection & Justification
+### 2.3 Model Selection & Justification
 We selected a **Random Forest Classifier** ($N_{trees}=100$, Max Depth=5) to approximate the Win Probability function:
 
 $$
@@ -58,7 +64,9 @@ where $\vec{x}$ is the state vector $\{ScoreDiff, EndID, Hammer, PowerPlay\}$.
 
 ### 3.1 The Twin Earths Simulation
 To measure the value of the Power Play, we simulated two scenarios for every possible game state:
-$$ WPA = f(\vec{x}_{PP}) - f(\vec{x}_{Normal}) $$
+$$
+WPA = f(\vec{x}_{PP}) - f(\vec{x}_{Normal})
+$$
 
 ### 3.2 Results
 *   **The Catch-Up Rule:** When trailing by 2-4 points in Ends 5-7, the Power Play maximizes WPA (+26%). The "open board" increases scoring variance, which is favorable for the trailing team.

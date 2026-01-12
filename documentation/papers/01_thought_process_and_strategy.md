@@ -20,7 +20,9 @@ The coach (the user) came to me with a question:
 ## 3. The "High School" Approach vs. The "Graduate" Approach
 Most students would answer this by looking at **Expected Points ($E[P]$)**.
 They would define the value of the Power Play ($V_{pp}$) as:
-$$ V_{pp} = E[Points | PowerPlay] - E[Points | Normal] $$
+$$
+V_{pp} = E[Points | PowerPlay] - E[Points | Normal]
+$$
 
 **Here is why that is wrong.**
 Imagine you are winning 8-0 in the last end ($S = +8, E = 8$).
@@ -32,12 +34,18 @@ Imagine you are winning 8-0 in the last end ($S = +8, E = 8$).
 We don't care about points ($P$). We care about Winning ($W$).
 We introduced a metric called **WPA**.
 We define the Game State vector $\vec{x}$ as:
-$$ \vec{x} = \{ \text{ScoreDiff}, \text{EndNumber}, \text{Hammer} \} $$
+$$
+\vec{x} = \{ \text{ScoreDiff}, \text{EndNumber}, \text{Hammer} \}
+$$
 
 The Win Probability function $f(\vec{x})$ gives us the probability of winning given state $\vec{x}$.
-$$ P(Win) = f(\vec{x}) $$
+$$
+P(Win) = f(\vec{x})
+$$
 
 Therefore, the value of the Power Play is the **Comparative Gain**:
-$$ WPA(\vec{x}) = P(Win | \vec{x}, PowerPlay=1) - P(Win | \vec{x}, PowerPlay=0) $$
+$$
+WPA(\vec{x}) = P(Win | \vec{x}, PowerPlay=1) - P(Win | \vec{x}, PowerPlay=0)
+$$
 
 **Our Strategy:** We will build an AI model to estimate the function $f(\vec{x})$ for every possible game state.
