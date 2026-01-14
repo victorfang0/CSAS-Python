@@ -1,0 +1,60 @@
+---
+title: "csas data challenege"
+author: "Bonos"
+date: "2026-01-10"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library("tidyverse")
+library("fastDummies")
+library("tidymodels")
+library("ggforce")
+library("ggplot2")
+
+setwd("~/Desktop/R Working Directory/Data") 
+stones_pp <- read.csv("powerplay.csv") %>%
+  as_tibble()
+
+stones_pp
+```
+
+
+
+```{r}
+library(dplyr)
+
+# Load data
+df <- read.csv("/Users/mbonos/Desktop/R Working Directory/Data/powerplay.csv")
+end_df <- df %>%
+  group_by(CompetitionID, SessionID, GameID, EndID, TeamID) %>%
+  slice_max(ShotID, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  mutate(PowerPlayUsed = as.integer(!is.na(PowerPlay) & PowerPlay != "" & PowerPlay != 0))
+
+# Create opponent result
+end_df <- end_df %>%
+  group_by(CompetitionID, SessionID, GameID, EndID) %>%
+  mutate(OppResult = Result[3 - row_number()]) %>%
+  ungroup()
+
+# Run model
+m3 <- lm(OppResult ~ PowerPlayUsed + EndID + factor(TeamID), data = end_df)
+summary(m3)
+
+```
+
+When a team uses a power play, the opponent scores about 1.02 fewer points in that end on average, holding end number and team constant.
+
+Methodology.
+We construct an end-level dataset by collapsing the shot-level data to one observation per team per end, retaining the final board state and the points scored in that end. For each team–end, we identify whether the team used a power play and pair each observation with the opponent’s score from the same end. We then estimate a linear regression with opponent points as the dependent variable and power play usage as the primary independent variable, controlling for end number and team fixed effects. This specification isolates the effect of power play usage on opponent scoring while accounting for strategic differences across ends and persistent differences in team quality.
+
+Results and interpretation.
+The results show that using a power play reduces the opponent’s scoring by approximately one point in the power play end, and this effect is highly statistically significant. In the context of curling, where most ends yield only zero to two points and matches are frequently decided by narrow margins, this represents a substantial defensive advantage. Rather than improving shot execution directly, the power play appears to reshape the end in a way that limits the opponent’s ability to generate scoring opportunities, making it harder for them to place stones effectively or create multi-point ends. This finding suggests that the primary value of the power play lies in its strategic and positional impact, suppressing opponent scoring and thereby shifting the expected point differential in favor of the team that uses it.
