@@ -137,6 +137,19 @@ def analyze_magic_spot():
     
     plt.figure(figsize=(10, 10))
     
+    # KDE "Glow" Effect (Underlay)
+    sns.kdeplot(
+        data=subset,
+        x='GuardX', y='GuardY',
+        hue='Outcome',
+        palette={f'Win ({T}+)': '#21918c', 'Loss (Steal)': '#440154'},
+        fill=True,
+        alpha=0.3,
+        levels=5,
+        thresh=0.05,
+        legend=False
+    )
+
     # Scatter (Teal vs Purple)
     sns.scatterplot(
         data=subset, 
@@ -144,8 +157,10 @@ def analyze_magic_spot():
         hue='Outcome', 
         style='Outcome',
         palette={f'Win ({T}+)': '#21918c', 'Loss (Steal)': '#440154'},
-        alpha=0.4,
-        s=40
+        alpha=0.6, # Slightly more opaque
+        s=40,
+        linewidth=0.5,
+        edgecolor='white'
     )
     
     # Plot Centroids
