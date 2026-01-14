@@ -24,3 +24,11 @@ To ensure the model generalizes to unseen games, we employed a strict validation
 | **`max_depth`** | `5` | **Regularization.** We intentionally limited the tree depth to 5. This forces the model to learn "General Rules" (e.g., "Down 2 with Hammer is good") rather than memorizing specific game states (Overfitting). Deep trees risks modeling the noise of individual execution errors. |
 | **`random_state`** | `42` | **Reproducibility.** Ensures that exactly the same ends are assigned to the Test Set every time the code is run, guaranteeing that our reported AUC (0.89) is verifiable by peer review. |
 | **`features`** | 4 | We restricted inputs to `ScoreDiff`, `EndID`, `Hammer`, and `PowerPlay`. We excluded Team IDs to ensure the model learned **Curling Strategy**, not "Team Sweden is good." |
+
+## B.4 Model Evaluation (ROC & AUC)
+To validate the model’s predictive power, we examined the **Receiver Operating Characteristic (ROC) Curve**.
+
+*   **The Metric:** The **AUC (Area Under Curve)** score represents the probability that the model will rank a randomly chosen "Winning" state higher than a randomly chosen "Losing" state.
+*   **Our Result:** **AUC = 0.89**.
+    *   *Interpretation:* A score of 0.5 is random guessing. A score of 1.0 is perfect prediction. achieving 0.89 indicates **Excellent** predictive power (typically, >0.8 is considered strong for sports analytics).
+*   **Visual Check:** The ROC curve (see `analysis/rf_roc_curve.png`) bows sharply toward the top-left corner, confirming that the model achieves a high True Positive Rate (Sensitivity) while keeping False Positives low.
